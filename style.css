@@ -1,0 +1,245 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+  font-family: 'Arial', sans-serif;
+  color: #222;
+  line-height: 1.6;
+}
+
+/* Hero Section */
+.hero {
+  background: url('hero.png') no-repeat center/cover;
+  height: 800px;
+  color: white;
+  position: relative;
+  
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 50px;
+}
+.navbar ul {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+.navbar a {
+  text-decoration: none;
+  color: white;
+  /* font-weight: bold; */
+}
+.hero-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  /* padding-top: 200px; */
+}
+.hero-text h1 {
+  font-size: 2.3rem;
+  margin-bottom: 20px;
+}
+.btn {
+  background: #39FF14;
+  color: #000000;
+  padding: 12px 25px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.btn:hover {
+  background: #ffffff;
+  color:#000000;
+}
+
+/* Vision */
+.vision {
+  padding: 80px 50px;
+  background: #111;
+  color: white;
+  text-align: center;
+}
+.vision h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+/* Categories */
+.categories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  padding: 80px 50px;
+  background: #fff;
+}
+.category {
+  text-align: center;
+}
+.category img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* Why Love ClosetCue */
+.why-love {
+  padding: 80px 50px;
+  background: #f9f9f9;
+}
+.why-love h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2rem;
+}
+.why-love ul {
+  max-width: 600px;
+  margin: auto;
+  list-style: square;
+  padding-left: 20px;
+}
+
+/* Curate Closet */
+.curate {
+  padding: 80px 50px;
+  text-align: center;
+  background: #fff;
+  background: url('contact.png') no-repeat center/cover;
+}
+.curate h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+.curate-text{
+  /* margin: 300px; */
+  color:white;
+  font-size:larger;
+  height: 600px;
+  padding-top: 200px;
+}
+
+/* Footer */
+footer {
+  background: #000;
+  color: #fff;
+  padding: 50px;
+  text-align: center;
+}
+.footer-logo {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.ai-help {
+  margin-top: 20px;
+}
+.copy {
+  margin-top: 30px;
+  font-size: 0.8rem;
+}
+
+/* Scroll Reveal Effect */
+.vision, .category, .why-love, .curate, footer {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease-out;
+}
+.vision.active, .category.active, .why-love.active, .curate.active, footer.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Button Pulse Animation */
+.pulse {
+  animation: pulseAnim 0.5s ease;
+}
+@keyframes pulseAnim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Footer glow underline */
+.footer-logo {
+  position: relative;
+  display: inline-block;
+}
+.footer-logo::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #39FF14, #ffffff);
+  animation: glowline 2s infinite alternate;
+}
+
+
+@keyframes glowline {
+  0% { transform: scaleX(0); opacity: 0.4; }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+
+
+/* Floating Box */
+.floating-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 280px;
+  background: #111;
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  z-index: 1000;
+  animation: slideUp 0.8s ease;
+}
+
+.floating-box h4 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #ffffff; /* neon green */
+}
+
+.floating-box p {
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.floating-box .btn {
+  background: #39FF14;
+  color: #000;
+  font-weight: bold;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.floating-box .btn:hover {
+  background: #2ecc71;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Slide-in animation */
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

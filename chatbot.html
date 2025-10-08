@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Fashion Assistant: Outfit Generator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Tailwind Configuration for Neon Green Aesthetic -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'neon-green': '#39FF14', // Used for primary accents
+                        'dark-bg': '#0a0a0a', // Dark background (kept in config but overwritten in CSS)
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* White Theme Base */
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* --- NEW HEADER STYLES --- */
+        .hero {
+            background-color: #fff; /* White Header */
+            color: #111; /* Dark Text */
+            border-bottom: 2px solid #e5e7eb; /* Light border */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+        }
+        .navbar {
+            padding: 15px 1rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #39FF14;
+            text-shadow: 0 0 5px rgba(57, 255, 20, 0.4);
+        }
+        .navbar ul {
+            display: none; 
+        }
+        .hero-text {
+            text-align: center;
+            padding: 2rem 1rem 4rem 1rem;
+        }
+        .hero-text h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #111; /* Dark text for header title */
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            text-shadow: none;
+            letter-spacing: 0.05em;
+        }
+        /* Custom style for the .btn used in the hero to match .btn-primary */
+        .hero-text .btn {
+            background-color: #39FF14;
+            color: #000;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 9999px; 
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
+            border: none;
+            cursor: pointer;
+            font-size: 1.125rem;
+            text-transform: uppercase;
+        }
+        .hero-text .btn:hover {
+            background-color: #ffffff;
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.8);
+        }
+        @media (min-width: 768px) {
+            .navbar ul {
+                display: flex;
+                gap: 1.5rem;
+            }
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+        }
+        /* --- END NEW HEADER STYLES --- */
+
+        .card {
+            background-color: #ffffff; /* White card */
+            border-radius: 12px;
+            /* Subtle shadow for light theme */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 0 5px rgba(57, 255, 20, 0.1); 
+            transition: all 0.4s ease-in-out; 
+            color: #1a1a1a; /* Dark text */
+        }
+        .option-card {
+            cursor: pointer;
+            border: 2px solid #e5e7eb; /* Light gray border */
+            transition: all 0.2s ease-in-out;
+            background-color: #f9fafb; /* Very light gray background */
+            color: #374151; /* Dark gray text */
+            user-select: none; 
+        }
+        .option-card:hover {
+            border-color: #39FF14;
+            background-color: #fff;
+        }
+        .option-card.selected {
+            border-color: #39FF14;
+            background-color: #f0fff4; /* Light green tint for selection */
+            color: #000; /* Black text on neon/light green */
+            font-weight: 600;
+            /* Subtle selected glow */
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.3); 
+        }
+        .btn-primary {
+            background-color: #39FF14;
+            color: #000;
+            transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s; 
+        }
+        .btn-primary:hover {
+            background-color: #28E60E; /* Darker neon on hover */
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.8); /* Stronger glow on hover */
+        }
+        /* SEO/ACCESSIBILITY: Clear focus state for keyboard navigation */
+        .btn-primary:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(57, 255, 20, 0.7); 
+        }
+        
+        .btn-secondary {
+            /* Adjusted for white background */
+            background-color: #f3f4f6;
+            color: #111;
+            transition: background-color 0.3s, transform 0.1s;
+            border: 1px solid #d1d5db;
+        }
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+            color: #000;
+        }
+        /* SEO/ACCESSIBILITY: Clear focus state for keyboard navigation */
+        .btn-secondary:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(57, 255, 20, 0.7); 
+        }
+
+        .question-group {
+            border-top: 1px solid #e5e7eb; /* Light gray separator line */
+            padding-top: 2rem;
+        }
+        .question-group:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+        
+        /* Loading Spinner CSS */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--neon-green);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none; 
+            margin: auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- REQUESTED GLOBAL HEADER -->
+    <header class="hero">
+        <div class="max-w-5xl mx-auto px-4 md:px-8">
+            <nav class="navbar flex justify-between items-center">
+                <div class="logo">CLOSETCUE</div>
+                <ul class="hidden md:flex space-x-6">
+                    <li><a href="#" class="text-gray-600 hover:text-neon-green transition-colors">ABOUT US</a></li>
+                    <li><a href="#" class="text-gray-600 hover:text-neon-green transition-colors">FEATURES</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="hero-text">
+            <h1>YOUR PERSONAL STYLIST, POWERED BY AI</h1>
+            <!-- Changed href to local anchor and used .btn class styling -->
+            <a href="#quiz-section">
+                <button class="btn">Start Styling!</button>
+            </a>
+        </div>
+    </header>
+    <!-- END REQUESTED GLOBAL HEADER -->
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        
+        <!-- Subtitle/Instructions moved from the old header structure -->
+        <header class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-neon-green">Complete Your Style Profile</h2>
+            <p class="text-lg text-gray-600 mt-2">Answer a few questions to generate a photorealistic outfit image tailored to your unique style.</p>
+        </header>
+
+
+        <!-- Style Quiz Section -->
+        <div id="quiz-section" class="card p-6 md:p-8 space-y-8">
+            
+            <!-- Identity & Personalization (NEW GROUP) -->
+            <div class="question-group">
+                <h2 class="text-2xl font-bold text-center mb-6 text-neon-green">Identity & Personalization</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What gender are you generating an outfit for?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="gender-options"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Color & Appearance -->
+            <div class="question-group">
+                <h2 class="text-2xl font-bold text-center mb-6 text-neon-green">Color & Appearance</h2>
+                <div class="space-y-6">
+                    <!-- Hair Color -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What is your hair color?</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="hair-color-options"></div>
+                    </div>
+                    <!-- Skin Tone -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What is your skin tone?</h3>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-4" id="skin-tone-options"></div>
+                    </div>
+                    <!-- Eye Color -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What is your eye color?</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="eye-color-options"></div>
+                    </div>
+                    <!-- Prints Preference -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">How do you feel about prints and patterns?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="prints-options"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather & Comfort -->
+            <div class="question-group">
+                <h2 class="text-2xl font-bold text-center mb-6 text-neon-green">Weather & Comfort</h2>
+                <div class="space-y-6">
+                    <!-- Comfort Level -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What's your typical comfort level?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="comfort-options"></div>
+                    </div>
+                    <!-- Weather Conditions (Multi-select) -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">Which weather conditions are you dressing for? <span class="text-sm font-normal text-gray-500">(Select all that apply)</span></h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="weather-options" data-multiselect="true"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Occasion & Lifestyle -->
+            <div class="question-group">
+                <h2 class="text-2xl font-bold text-center mb-6 text-neon-green">Occasion & Lifestyle</h2>
+                <div class="space-y-6">
+                    <!-- Occasion (Multi-select) -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What's the occasion? <span class="text-sm font-normal text-gray-500">(Select all that apply)</span></h3>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-4" id="occasion-options" data-multiselect="true"></div>
+                    </div>
+                    <!-- Style -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What's your signature style?</h3>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-4" id="style-options"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pt-6">
+                <button id="generate-btn" class="btn-primary font-bold py-3 px-10 rounded-full w-full md:w-auto text-xl uppercase tracking-wider">
+                    Generate My AI Outfit
+                </button>
+                <p id="validation-message" class="text-red-500 mt-2 hidden"></p>
+            </div>
+        </div>
+
+        <!-- Outfit Recommendation/Image Generation Section -->
+        <div id="outfit-section" class="hidden mt-10 p-6 md:p-10 rounded-xl bg-gray-50 text-gray-800 shadow-2xl">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-extrabold text-neon-green tracking-wide">AI Outfit Visualization</h2>
+                <p class="text-lg text-gray-600 mt-2">A personalized look created just for you.</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-6 mb-8">
+                <!-- Image Display Area -->
+                <div id="image-container" class="w-full md:w-3/5 aspect-[3/4] bg-gray-200 rounded-xl flex items-center justify-center overflow-hidden border-2 border-neon-green/50 relative shadow-xl">
+                    <div id="loadingSpinner" class="spinner absolute"></div>
+                    <img id="resultImage" src="" alt="Generated AI Outfit Image" class="w-full h-full object-cover rounded-xl hidden transition-opacity duration-500">
+                    <p id="placeholderText" class="text-gray-500 italic p-4 text-center">Your unique, generated outfit image will appear here!</p>
+                </div>
+
+                <!-- Prompt and Info Area -->
+                <div class="w-full md:w-2/5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-neon-green mb-3">Generated Prompt:</h3>
+                        <p id="prompt-output" class="text-sm text-gray-700 bg-gray-200 p-4 rounded-lg italic break-words"></p>
+                        
+                        <h3 class="text-xl font-bold text-neon-green mt-6 mb-3">Described Components:</h3>
+                        <div id="item-list" class="space-y-3 text-gray-700">
+                            <!-- Descriptive component breakdown will be listed here -->
+                        </div>
+                    </div>
+
+                    <p id="error-message" class="text-red-500 mt-4 text-sm hidden"></p>
+
+                    <button id="restart-btn" class="btn-secondary font-bold py-3 px-8 rounded-full w-full mt-6 text-lg">
+                        <span class="text-gray-800">Start Over</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- API Configuration ---
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict";
+        const apiKey = "r8_NPTeLfOidpmqmF4YTK99rDij2dTPoN60WcBsx"; // API key is provided by the environment
+
+        // NOTE: The hardcoded clothingDB has been removed to allow for infinite variety from the AI model.
+
+        const quizOptions = {
+            gender: ["Male", "Female", "Non-binary"], // ADDED GENDER
+            hairColor: ["Dark Brown", "Medium Blonde", "Light Blonde", "Red", "Black"],
+            skinTone: ["Fair", "Light", "Medium", "Olive", "Dark", "Deep"],
+            eyeColor: ["Blue", "Green", "Hazel", "Brown", "Dark Brown"],
+            prints: ["I love them (Bold Prints)", "I wear them sometimes (Subtle Patterns)", "I prefer solids (Minimalist Look)"],
+            comfort: ["I'm always cold (Layered)", "I'm always warm (Lightweight)", "I'm comfortable (Versatile)"],
+            weather: ["Cold (Snow, Frost)", "Warm (Sun, Heat)", "Rainy (Wet, Damp)", "Humid (Sticky, Tropical)", "Windy (Breezy, Cool)"],
+            occasion: ["Casual (Errands, Coffee)", "Work (Office, Business)", "Formal (Gala, Wedding)", "Weekend (Travel, Brunch)", "Vacation (Beach, Sightseeing)", "Activewear (Gym, Hike)"],
+            style: ["Minimalist", "Chic", "Edgy", "Bohemian", "Classic", "Trendy"]
+        };
+
+        const userPreferences = {
+            gender: null, // ADDED GENDER
+            hairColor: null, skinTone: null, eyeColor: null, prints: null,
+            comfort: null, weather: [], occasion: [], style: null
+        };
+        
+        // --- DOM Elements ---
+        const containers = {
+            gender: document.getElementById('gender-options'), // ADDED GENDER
+            hairColor: document.getElementById('hair-color-options'), skinTone: document.getElementById('skin-tone-options'),
+            eyeColor: document.getElementById('eye-color-options'), prints: document.getElementById('prints-options'),
+            comfort: document.getElementById('comfort-options'), weather: document.getElementById('weather-options'),
+            occasion: document.getElementById('occasion-options'), style: document.getElementById('style-options'),
+        };
+        const generateBtn = document.getElementById('generate-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const quizSection = document.getElementById('quiz-section');
+        const outfitSection = document.getElementById('outfit-section');
+        const validationMessage = document.getElementById('validation-message');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const resultImage = document.getElementById('resultImage');
+        const placeholderText = document.getElementById('placeholderText');
+        const promptOutput = document.getElementById('prompt-output');
+        const itemList = document.getElementById('item-list');
+        const errorMessage = document.getElementById('error-message');
+
+
+        // --- UI & Quiz Logic ---
+        
+        function createOptionCards(container, options, category) {
+            options.forEach(option => {
+                const card = document.createElement('div');
+                card.className = 'option-card p-3 rounded-lg text-center font-medium text-sm transition-all duration-200 hover:shadow-md';
+                card.textContent = option;
+                // Create a clean, kebab-case value for storage
+                const value = option.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                card.dataset.value = value;
+                card.dataset.category = category;
+                container.appendChild(card);
+            });
+        }
+        
+        function handleOptionSelect(e) {
+            const target = e.target;
+            if (!target.classList.contains('option-card')) return;
+
+            const { category, value } = target.dataset;
+            const parentContainer = target.parentElement;
+            const isMultiSelect = parentContainer.dataset.multiselect === 'true';
+
+            if (isMultiSelect) {
+                target.classList.toggle('selected');
+                const selectedValues = Array.from(parentContainer.querySelectorAll('.selected')).map(el => el.dataset.value);
+                userPreferences[category] = selectedValues;
+            } else {
+                parentContainer.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+                target.classList.add('selected');
+                userPreferences[category] = value;
+            }
+        }
+
+        // --- Outfit Description Logic (New Core Logic) ---
+
+        function getFullOutfitDescription() {
+            const { prints, comfort, weather, occasion, style, gender } = userPreferences; // Destructure gender
+            
+            // Map preferences to descriptive item choices
+            const styleDesc = style ? style.charAt(0).toUpperCase() + style.slice(1) : 'stylish';
+            const occasionDesc = occasion.length > 0 ? occasion.map(o => o.split('-')[0]).join(' and ') : 'everyday';
+            const comfortDesc = comfort?.includes('cold') ? 'layered and warm' : (comfort?.includes('warm') ? 'lightweight and breathable' : 'versatile and comfortable');
+            const patternDesc = prints?.includes('solids') ? 'solid-colored' : (prints?.includes('bold') ? 'boldly patterned' : 'subtly textured');
+            const genderDesc = gender ? gender.split('-')[0] : 'androgynous'; // Clean gender preference
+
+            let top, bottom, shoes;
+            let femaleDefaults = (genderDesc === 'female' || genderDesc === 'non-binary');
+
+            // Define outfit components based on primary style
+            if (styleDesc === 'Edgy' || styleDesc === 'Trendy') {
+                top = femaleDefaults ? `a ${patternDesc} street-style crop top or a black tailored faux leather jacket` : `a ${patternDesc} oversized band tee under a black denim jacket`;
+                bottom = femaleDefaults ? 'high-waisted dark leather trousers or a pleated mini skirt' : 'slim-fit ripped black jeans or cargo pants';
+                shoes = 'chunky platform boots or futuristic metallic sneakers';
+                
+                if (genderDesc === 'non-binary') {
+                    top = `a vibrant oversized mesh shirt or a structured boxy jacket`;
+                    bottom = 'fluid wide-leg pants or distressed knee-length shorts';
+                    shoes = 'utility sneakers or sleek oxfords';
+                }
+
+            } else if (styleDesc === 'Bohemian') {
+                top = femaleDefaults ? 'a loose, off-the-shoulder, natural-toned, flowing patterned blouse' : 'a loose, natural linen shirt or a patterned short-sleeve button-up';
+                bottom = femaleDefaults ? 'wide-leg linen pants or a tiered maxi skirt' : 'relaxed fit drawstring pants or natural hemp trousers';
+                shoes = femaleDefaults ? 'braided leather sandals or distressed suede ankle boots' : 'espadrilles or leather slip-ons';
+
+            } else if (styleDesc === 'Minimalist' || styleDesc === 'Classic') {
+                top = femaleDefaults ? 'a structured, neutral-toned silk shirt or a simple cashmere sweater' : 'a perfectly fitted crew neck cashmere sweater or a crisp white button-down shirt';
+                bottom = femaleDefaults ? 'straight-leg wool trousers or clean indigo denim' : 'straight-leg tailored grey wool trousers or dark wash selvedge denim';
+                shoes = femaleDefaults ? 'sleek polished leather loafers or minimalist white trainers' : 'polished leather dress shoes or minimalist leather sneakers';
+
+            } else if (styleDesc === 'Chic' || occasionDesc.includes('Formal')) {
+                top = femaleDefaults ? 'a silky, elegant high-neck blouse or a double-breasted tailored blazer' : 'a custom-tailored velvet blazer over a fine-gauge turtleneck';
+                bottom = femaleDefaults ? 'wide-leg flowing tailored pants or a sophisticated midi skirt' : 'sharp, dark tuxedo pants';
+                shoes = femaleDefaults ? 'pointed-toe stiletto heels or elegant leather flats' : 'patent leather oxfords';
+            } else { // Default to Casual
+                top = `a ${comfortDesc}, ${patternDesc} relaxed fit T-shirt or a light knit top`;
+                bottom = 'comfortable, modern fit denim jeans or stretch chinos';
+                shoes = 'casual athletic sneakers or flat ankle boots';
+            }
+
+            // Adjust based on strong comfort/weather signals
+            if (weather.includes('cold-snow-frost')) {
+                top = `A thick, cozy, layered knit sweater or faux fur coat over a long-sleeve shirt`;
+                shoes = 'weather-proof, heavy-duty leather boots';
+            } else if (weather.includes('warm-sun-heat') || weather.includes('humid-sticky-tropical')) {
+                top = `A lightweight, breathable tank top or linen short-sleeve shirt`;
+                bottom = 'tailored shorts or a flowing midi skirt';
+                shoes = 'open-toe sandals or colorful espadrilles';
+            }
+
+            return {
+                top: top,
+                bottom: bottom,
+                shoes: shoes,
+                styleDesc: styleDesc,
+                occasionDesc: occasionDesc,
+                gender: genderDesc // ADDED
+            };
+        }
+
+        function createImagePrompt(outfitDesc, preferences) {
+            const { hairColor, skinTone, eyeColor, weather } = preferences;
+            const { top, bottom, shoes, styleDesc, occasionDesc, gender } = outfitDesc; // Added gender
+
+            // Reconstruct friendly names from saved values for the prompt
+            const weatherDesc = weather.length > 0 ? `The setting reflects ${weather.map(w => w.split('(')[0].trim().toLowerCase()).join(' and ')} weather conditions, with appropriate background ambiance.` : '';
+
+            // Set model type for the AI prompt based on gender preference
+            const modelType = gender === 'female' ? 'female' : (gender === 'male' ? 'male' : 'non-binary');
+
+            // 1. Base description and setting
+            let prompt = `Full-body photorealistic image of a beautiful ${modelType} fashion model, standing outdoors in a city setting, soft cinematic lighting, professional fashion shoot.`;
+
+            // 2. Outfit components and style
+            prompt += ` The model is dressed in a complete outfit styled in a bold **${styleDesc}** aesthetic, perfect for a **${occasionDesc}** event.`;
+            prompt += ` The attire consists of **${top}**, paired with **${bottom}**, and completed with **${shoes}**.`;
+
+            // 3. User appearance and preferences
+            prompt += ` The model has **${hairColor}** hair, **${eyeColor}** eyes, and **${skinTone}** skin.`;
+            
+            // 4. Context and quality
+            prompt += ` ${weatherDesc}`;
+            prompt += ` Full length photo, cinematic shot, 8k, ultra-detailed textures, sharp focus, magazine editorial quality.`;
+
+            return prompt;
+        }
+
+
+        // --- API & Flow Control ---
+
+        async function fetchWithExponentialBackoff(url, options, retries = 5) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status !== 429) {
+                        return response;
+                    }
+                    const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    const delay = Math.pow(2, i) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+            throw new Error("Failed to fetch data after multiple retries.");
+        }
+
+        async function generateImageFromPrompt(prompt) {
+            errorMessage.textContent = '';
+            errorMessage.classList.add('hidden');
+            resultImage.classList.add('hidden');
+            placeholderText.classList.add('hidden');
+            loadingSpinner.style.display = 'block';
+            
+            try {
+                const payload = {
+                    instances: [{ prompt: prompt }],
+                    parameters: { "sampleCount": 1 }
+                };
+
+                const url = `${API_URL}?key=${apiKey}`;
+
+                const response = await fetchWithExponentialBackoff(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // --- FIX: Read response as text and parse manually for robust error handling ---
+                const responseText = await response.text();
+                let result;
+
+                // 2. Try to parse the text as JSON
+                try {
+                    result = JSON.parse(responseText);
+                } catch (e) {
+                    // If parsing failed, throw a descriptive error based on status
+                    if (!response.ok) {
+                        throw new Error(`API request failed (Status: ${response.status}). The server returned non-JSON data or an empty response.`);
+                    }
+                    throw new Error(`Successful API call returned invalid data. Could not parse JSON from response.`);
+                }
+
+                // 3. Handle API error response if status was not OK, but JSON was received
+                if (!response.ok) {
+                    // Use the message from the parsed JSON result
+                    throw new Error(result.error?.message || `API request failed with status: ${response.status}.`);
+                }
+                // --- END FIX ---
+
+
+                // Process successful result
+                const base64Data = result?.predictions?.[0]?.bytesBase64Encoded;
+
+                if (base64Data) {
+                    const imageUrl = `data:image/png;base64,${base64Data}`;
+                    resultImage.src = imageUrl;
+                    resultImage.classList.remove('hidden');
+                    return true;
+                } else {
+                    throw new Error("Image data was not found in the API response.");
+                }
+
+            } catch (error) {
+                console.error("Image generation failed:", error);
+                errorMessage.textContent = `Error generating image: ${error.message}.`;
+                errorMessage.classList.remove('hidden');
+                placeholderText.classList.remove('hidden');
+                return false;
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+        
+        async function handleGenerateOutfit() {
+            // Check for required fields (Added userPreferences.gender)
+            if (userPreferences.occasion.length === 0 || !userPreferences.style || !userPreferences.hairColor || !userPreferences.skinTone || !userPreferences.gender) {
+                validationMessage.textContent = "Please select your Gender, Hair Color, Skin Tone, Occasion, and Style to proceed.";
+                validationMessage.classList.remove('hidden');
+                return;
+            }
+            validationMessage.classList.add('hidden');
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'BUILDING OUTFIT...';
+            generateBtn.classList.add('animate-pulse', 'shadow-lg');
+
+            // 1. Determine the outfit components and stylistic description
+            const finalOutfitDescription = getFullOutfitDescription();
+            
+            // 2. Generate the detailed image prompt
+            const prompt = createImagePrompt(finalOutfitDescription, userPreferences);
+            
+            // 3. Show loading UI and switch sections
+            quizSection.classList.add('hidden');
+            outfitSection.classList.remove('hidden');
+            promptOutput.textContent = prompt;
+            
+            // Update item list using the generated descriptions
+            itemList.innerHTML = `
+                <p>Top: <span class="font-semibold text-neon-green">${finalOutfitDescription.top}</span></p>
+                <p>Bottom: <span class="font-semibold text-neon-green">${finalOutfitDescription.bottom}</span></p>
+                <p>Shoes: <span class="font-semibold text-neon-green">${finalOutfitDescription.shoes}</span></p>
+                <p class="mt-4 text-gray-500 text-xs italic">These detailed components are passed directly into the AI Image Generator to create your unique visualization.</p>
+            `;
+            
+            // 4. Generate the image
+            await generateImageFromPrompt(prompt);
+
+            // 5. Restore quiz button state (in case user returns via restart)
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate My AI Outfit';
+            generateBtn.classList.remove('animate-pulse', 'shadow-lg');
+        }
+        
+        function reset() {
+            outfitSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            
+            // Reset preferences
+            Object.keys(userPreferences).forEach(key => {
+                userPreferences[key] = Array.isArray(userPreferences[key]) ? [] : null;
+            });
+            
+            // Reset UI selections
+            document.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+            
+            // Clear results display
+            resultImage.classList.add('hidden');
+            resultImage.src = '';
+            placeholderText.classList.remove('hidden');
+            promptOutput.textContent = '';
+            itemList.innerHTML = '';
+            errorMessage.textContent = '';
+            errorMessage.classList.add('hidden');
+            validationMessage.classList.add('hidden');
+        }
+
+        function init() {
+            for (const category in quizOptions) {
+                createOptionCards(containers[category], quizOptions[category], category);
+            }
+            quizSection.addEventListener('click', handleOptionSelect);
+            generateBtn.addEventListener('click', handleGenerateOutfit);
+            restartBtn.addEventListener('click', reset);
+        }
+
+        init();
+    </script>
+</body>
+</html>

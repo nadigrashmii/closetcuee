@@ -1,0 +1,330 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Fashion Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px_6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: all 0.3s ease;
+        }
+        .option-card {
+            cursor: pointer;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s ease-in-out;
+        }
+        .option-card:hover {
+            border-color: #39FF14;
+        }
+        .option-card.selected {
+            border-color: #39FF14;
+            background-color: #eef2ff;
+            color: #39FF14;
+            font-weight: 600;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        .btn-primary {
+            background-color: #39FF14;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #39FF14;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #000000;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .question-group {
+            border-top: 1px solid #e5e7eb;
+            padding-top: 2rem;
+        }
+        .question-group:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">AI Fashion Assistant</h1>
+            <p class="text-lg text-gray-600 mt-2">Let's build your style profile for personalized recommendations.</p>
+        </header>
+
+        <!-- Style Quiz Section 
+        <div id="quiz-section" class="card p-6 md:p-8 space-y-8">
+            
+            <!-- Color & Appearance 
+            <div class="question-group">
+                <h2 class="text-2xl font-bold text-center mb-6">Color & Appearance</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What is your hair color?</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="hair-color-options"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What is your skin tone?</h3>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-4" id="skin-tone-options"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What is your eye color?</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="eye-color-options"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">How do you feel about prints and patterns?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="prints-options"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weather & Comfort 
+            <div class="question-group">
+                <h2 class="text-2xl font-bold text-center mb-6">Weather & Comfort</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What's your typical comfort level?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="comfort-options"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">Which weather conditions are you dressing for? <span class="text-sm font-normal text-gray-500">(Select all that apply)</span></h3>
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4" id="weather-options" data-multiselect="true"></div>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Occasion & Lifestyle --
+            <div class="question-group">
+                <h2 class="text-2xl font-bold text-center mb-6">Occasion & Lifestyle</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What's the occasion? <span class="text-sm font-normal text-gray-500">(Select all that apply)</span></h3>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-4" id="occasion-options" data-multiselect="true"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-3">What's your signature style?</h3>
+                        <div class="grid grid-cols-3 md:grid-cols-6 gap-4" id="style-options"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pt-6">
+                <button id="generate-btn" class="btn-primary font-bold py-3 px-8 rounded-lg w-full md:w-auto text-lg">
+                    ✨ Find My Outfit
+                </button>
+            </div>
+        </div>
+
+        <!-- Outfit Recommendation Section --
+        <div id="outfit-section" class="hidden mt-10">
+             <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-900">Your Personalized Outfit</h2>
+                <p class="text-md text-gray-600">Based on your unique style profile, here is our recommendation.</p>
+            </div>
+            <div id="outfit-display" class="grid md:grid-cols-3 gap-6">
+                <!-- Recommended outfit items will be displayed here --
+            </div>
+             <div class="text-center mt-8">
+                <button id="restart-btn" class="btn-secondary font-bold py-3 px-8 rounded-lg w-full md:w-auto text-lg">
+                    Start Over
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        // Mock database with more detailed attributes for better recommendations.
+        const clothingDB = {
+            tops: [
+                { id: 1, name: "White T-Shirt", style: ["casual", "minimalist"], occasion: ["casual", "weekend"], imageUrl: "https://placehold.co/600x800/FFFFFF/333333?text=White+T-Shirt", pattern: "solid", weather: ["warm", "humid"], flattering_colors: ["neutrals", "vibrants"] },
+                { id: 2, name: "Blue Silk Blouse", style: ["chic", "classic"], occasion: ["work", "evening"], imageUrl: "https://placehold.co/600x800/5c9ded/FFFFFF?text=Blue+Silk+Blouse", pattern: "solid", weather: ["warm"], flattering_colors: ["vibrants", "pastels"] },
+                { id: 3, name: "Black Graphic Tee", style: "edgy", occasion: ["casual", "weekend"], imageUrl: "https://placehold.co/600x800/333333/FFFFFF?text=Black+Graphic+Tee", pattern: "print", weather: ["warm"], flattering_colors: ["dark", "vibrants"] },
+                { id: 4, name: "Beige Knit Sweater", style: ["minimalist", "classic"], occasion: ["casual", "work", "weekend"], imageUrl: "https://placehold.co/600x800/f5f5dc/333333?text=Beige+Knit+Sweater", pattern: "solid", weather: ["cold", "windy"], flattering_colors: ["neutrals", "earthy"] },
+                { id: 5, name: "Red Floral Top", style: "bohemian", occasion: ["casual", "weekend", "vacation"], imageUrl: "https://placehold.co/600x800/dc143c/FFFFFF?text=Red+Floral+Top", pattern: "print", weather: ["warm"], flattering_colors: ["vibrants", "dark"] },
+                { id: 6, name: "Pastel Pink Hoodie", style: "casual", occasion: ["casual", "weekend"], imageUrl: "https://placehold.co/600x800/ffc0cb/333333?text=Pastel+Pink+Hoodie", pattern: "solid", weather: ["cold", "windy"], flattering_colors: ["pastels", "neutrals"] },
+            ],
+            bottoms: [
+                { id: 11, name: "Classic Denim Jeans", style: ["casual", "classic"], occasion: ["casual", "weekend", "work"], imageUrl: "https://placehold.co/600x800/4682b4/FFFFFF?text=Denim+Jeans", pattern: "solid", weather: ["cold", "warm", "windy"], flattering_colors: ["neutrals", "dark"] },
+                { id: 12, name: "Black Tailored Trousers", style: ["chic", "classic", "minimalist"], occasion: ["work", "evening", "formal"], imageUrl: "https://placehold.co/600x800/333333/FFFFFF?text=Black+Trousers", pattern: "solid", weather: ["cold", "warm"], flattering_colors: ["dark", "neutrals"] },
+                { id: 13, name: "Khaki Chinos", style: ["classic", "casual"], occasion: ["work", "weekend"], imageUrl: "https://placehold.co/600x800/f0e68c/333333?text=Khaki+Chinos", pattern: "solid", weather: ["warm"], flattering_colors: ["earthy", "neutrals"] },
+                { id: 14, name: "Plaid Mini Skirt", style: "edgy", occasion: ["casual", "evening"], imageUrl: "https://placehold.co/600x800/a52a2a/FFFFFF?text=Plaid+Skirt", pattern: "print", weather: ["cold", "warm"], flattering_colors: ["dark", "vibrants"] },
+            ],
+            shoes: [
+                { id: 21, name: "White Sneakers", style: ["casual", "minimalist", "trendy"], occasion: ["casual", "weekend", "vacation"], imageUrl: "https://placehold.co/600x400/FFFFFF/333333?text=White+Sneakers", weather: ["warm", "cold"] },
+                { id: 22, name: "Black Heeled Boots", style: ["chic", "edgy", "classic"], occasion: ["evening", "work", "formal"], imageUrl: "https://placehold.co/600x400/333333/FFFFFF?text=Heeled+Boots", weather: ["cold", "rainy"] },
+                { id: 23, name: "Leather Loafers", style: ["classic", "chic"], occasion: ["work", "casual"], imageUrl: "https://placehold.co/600x400/8b4513/FFFFFF?text=Loafers", weather: ["warm", "cold"] },
+                { id: 24, name: "Tan Sandals", style: ["bohemian", "minimalist"], occasion: ["casual", "vacation"], imageUrl: "https://placehold.co/600x400/deb887/FFFFFF?text=Tan+Sandals", weather: ["warm", "humid"] },
+            ]
+        };
+
+        const quizOptions = {
+            hairColor: ["Dark", "Medium", "Light", "Red", "Mix"],
+            skinTone: ["Fair", "Light", "Medium", "Olive", "Dark", "Deep"],
+            eyeColor: ["Blue", "Green", "Hazel", "Brown", "Dark Brown"],
+            prints: ["I love them", "I wear them sometimes", "I prefer solids"],
+            comfort: ["I'm always cold", "I'm always warm", "I'm comfortable"],
+            weather: ["Cold", "Warm", "Rainy", "Humid", "Windy"],
+            occasion: ["Casual", "Work", "Formal", "Weekend", "Vacation", "Activewear"],
+            style: ["Minimalist", "Chic", "Edgy", "Bohemian", "Classic", "Trendy"]
+        };
+
+        // --- STATE ---
+        const userPreferences = {
+            hairColor: null, skinTone: null, eyeColor: null, prints: null,
+            comfort: null, weather: [], occasion: [], style: null
+        };
+        
+        // --- DOM ELEMENTS ---
+        const containers = {
+            hairColor: document.getElementById('hair-color-options'),
+            skinTone: document.getElementById('skin-tone-options'),
+            eyeColor: document.getElementById('eye-color-options'),
+            prints: document.getElementById('prints-options'),
+            comfort: document.getElementById('comfort-options'),
+            weather: document.getElementById('weather-options'),
+            occasion: document.getElementById('occasion-options'),
+            style: document.getElementById('style-options'),
+        };
+        const generateBtn = document.getElementById('generate-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const quizSection = document.getElementById('quiz-section');
+        const outfitSection = document.getElementById('outfit-section');
+        const outfitDisplay = document.getElementById('outfit-display');
+
+        // --- FUNCTIONS ---
+        
+        function createOptionCards(container, options, category) {
+            options.forEach(option => {
+                const card = document.createElement('div');
+                card.className = 'option-card p-3 rounded-lg text-center font-medium text-sm';
+                card.textContent = option;
+                card.dataset.value = option.toLowerCase().replace(/ /g, '-');
+                card.dataset.category = category;
+                container.appendChild(card);
+            });
+        }
+        
+        function handleOptionSelect(e) {
+            const target = e.target;
+            if (!target.classList.contains('option-card')) return;
+
+            const { category, value } = target.dataset;
+            const parentContainer = target.parentElement;
+            const isMultiSelect = parentContainer.dataset.multiselect === 'true';
+
+            if (isMultiSelect) {
+                target.classList.toggle('selected');
+                const selectedValues = Array.from(parentContainer.querySelectorAll('.selected')).map(el => el.dataset.value);
+                userPreferences[category] = selectedValues;
+            } else {
+                parentContainer.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+                target.classList.add('selected');
+                userPreferences[category] = value;
+            }
+        }
+
+        function generateOutfit() {
+            // Basic validation
+            if (userPreferences.occasion.length === 0 || !userPreferences.style) {
+                alert("Please select at least one Occasion and your Style.");
+                return;
+            }
+
+            const scoreItem = (item, category) => {
+                let score = 0;
+                // Strong matches
+                if (userPreferences.occasion.some(occ => item.occasion.includes(occ))) score += 5;
+                if (Array.isArray(item.style) ? item.style.includes(userPreferences.style) : item.style === userPreferences.style) score += 5;
+                
+                // Weaker matches
+                if (userPreferences.weather.length > 0 && userPreferences.weather.some(w => item.weather?.includes(w))) score += 2;
+                if (userPreferences.prints === 'i-love-them' && item.pattern === 'print') score += 2;
+                if (userPreferences.prints === 'i-prefer-solids' && item.pattern === 'solid') score += 2;
+                if (userPreferences.comfort === 'im-always-cold' && item.weather?.includes('cold')) score += 1;
+                if (userPreferences.comfort === 'im-always-warm' && item.weather?.includes('warm')) score += 1;
+
+                // Make sure it's a possible choice for the main occasion
+                 if (!userPreferences.occasion.some(occ => item.occasion.includes(occ))) return 0;
+                
+                return score;
+            };
+
+            const findBestItem = (category) => {
+                const scoredItems = clothingDB[category]
+                    .map(item => ({ item, score: scoreItem(item, category) }))
+                    .filter(x => x.score > 0)
+                    .sort((a, b) => b.score - a.score);
+
+                return scoredItems.length > 0 ? scoredItems[0].item : clothingDB[category][0]; // Fallback
+            };
+
+            const outfit = {
+                top: findBestItem('tops'),
+                bottom: findBestItem('bottoms'),
+                shoes: findBestItem('shoes')
+            };
+            
+            displayOutfit(outfit);
+        }
+        
+        function displayOutfit(outfit) {
+            quizSection.classList.add('hidden');
+            outfitSection.classList.remove('hidden');
+            outfitDisplay.innerHTML = ''; 
+
+            const outfitItems = [
+                { type: 'Top', item: outfit.top },
+                { type: 'Bottom', item: outfit.bottom },
+                { type: 'Shoes', item: outfit.shoes }
+            ];
+
+            outfitItems.forEach(({ type, item }) => {
+                const card = document.createElement('div');
+                card.className = 'card p-6 text-center';
+                card.innerHTML = `
+                    <div class="bg-gray-100 rounded-lg h-56 w-full mb-4 overflow-hidden">
+                         <img src="${item.imageUrl}" alt="${item.name}" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-semibold text-lg">${type}</h3>
+                    <p class="text-gray-600">${item.name}</p>
+                `;
+                outfitDisplay.appendChild(card);
+            });
+        }
+        
+        function reset() {
+            outfitSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            Object.keys(userPreferences).forEach(key => {
+                userPreferences[key] = Array.isArray(userPreferences[key]) ? [] : null;
+            });
+            document.querySelectorAll('.option-card').forEach(card => card.classList.remove('selected'));
+        }
+
+        function init() {
+            for (const category in quizOptions) {
+                createOptionCards(containers[category], quizOptions[category], category);
+            }
+            quizSection.addEventListener('click', handleOptionSelect);
+            generateBtn.addEventListener('click', generateOutfit);
+            restartBtn.addEventListener('click', reset);
+        }
+
+        init();
+    </script>
+</body>
+</html> -->
